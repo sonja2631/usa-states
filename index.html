@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>USA Map rahhhh</title>
+    <title>USA Kennzeichen Map</title>
     <style>
         path {
             fill: lightgray;
@@ -14,11 +14,10 @@
         }
     </style>
 </head>
-    
 <body>
 
-<h1>USA Map rahhhh</h1>
-<p>Klicke auf einen State, um ihn auszuwählen. Super zum Kennzeichen collecten <3 </p>
+<<h1>USA Map rahhhh</h1>
+<p>Klicke auf einen State, um ihn auszuwählen. Super zum Kennzeichen collecten! </p>
 
 <!-- USA Map Widget - Created with USA Map Widget Generator -->
 <div class="usa-map-widget" style="width: 100%; max-width: 1200px; margin: 0 auto; font-size: 14px !important;">
@@ -269,18 +268,38 @@
 </div>
 
 <script>
-    document.querySelectorAll('.usa-map-widget .state').forEach(state => {
-      state.addEventListener('click', function() {
-        // Toggle-Farbe beim Klick
-        if (this.style.fill !== 'red') {
-          this.style.fill = 'red';
+  // Alle States auswählen
+  document.querySelectorAll('.usa-map-widget .state').forEach(state => {
+    state.addEventListener('click', function() {
+      // Toggle-Farbe beim Klick
+      if (this.style.fill !== 'red') {
+        this.style.fill = 'red';
+      } else {
+        this.style.fill = '#294a85'; // Originalfarbe zurück
+      }
+
+      // localStorage speichern
+        let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+        if (!clickedStates.includes(id)) {
+            clickedStates.push(id);
         } else {
-          this.style.fill = '#294a85'; // Originalfarbe zurück
+            // Wenn zurückgesetzt, entfernen
+            clickedStates = clickedStates.filter(stateId => stateId !== id);
         }
-      });
+        localStorage.setItem('clickedStates', JSON.stringify(clickedStates));
+
     });
-  </script>
+
+    // Gespeicherte States beim Laden wiederherstellen
+    let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+    clickedStates.forEach(id => {
+        $('#' + id).attr('fill', 'red');
+    });
+
+  });
+</script>
+}
+</script>
 
 </body>
 </html>
-
