@@ -277,7 +277,25 @@
       } else {
         this.style.fill = '#294a85'; // Originalfarbe zurück
       }
+
+      // localStorage speichern
+        let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+        if (!clickedStates.includes(id)) {
+            clickedStates.push(id);
+        } else {
+            // Wenn zurückgesetzt, entfernen
+            clickedStates = clickedStates.filter(stateId => stateId !== id);
+        }
+        localStorage.setItem('clickedStates', JSON.stringify(clickedStates));
+
     });
+
+    // Gespeicherte States beim Laden wiederherstellen
+    let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+    clickedStates.forEach(id => {
+        $('#' + id).attr('fill', 'red');
+    });
+
   });
 </script>
 }
