@@ -269,38 +269,17 @@
 </div>
 
 <script>
-  // Alle States auswählen
-  document.querySelectorAll('.usa-map-widget .state').forEach(state => {
-    state.addEventListener('click', function() {
-      // Toggle-Farbe beim Klick
-      if (this.style.fill !== 'red') {
-        this.style.fill = 'red';
-      } else {
-        this.style.fill = '#294a85'; // Originalfarbe zurück
-      }
-
-      // localStorage speichern
-        let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
-        if (!clickedStates.includes(id)) {
-            clickedStates.push(id);
+    document.querySelectorAll('.usa-map-widget .state').forEach(state => {
+      state.addEventListener('click', function() {
+        // Toggle-Farbe beim Klick
+        if (this.style.fill !== 'red') {
+          this.style.fill = 'red';
         } else {
-            // Wenn zurückgesetzt, entfernen
-            clickedStates = clickedStates.filter(stateId => stateId !== id);
+          this.style.fill = '#294a85'; // Originalfarbe zurück
         }
-        localStorage.setItem('clickedStates', JSON.stringify(clickedStates));
-
+      });
     });
-
-    // Gespeicherte States beim Laden wiederherstellen
-    let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
-    clickedStates.forEach(id => {
-        $('#' + id).attr('fill', 'red');
-    });
-
-  });
-</script>
-}
-</script>
+  </script>
 
 </body>
 </html>
