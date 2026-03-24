@@ -54,6 +54,7 @@
     overflow: hidden;
 }
 
+
 #progress-bar {
     height: 100%;
     width: 0%;
@@ -62,14 +63,39 @@
     transition: width 0.3s ease;
 }
 
+#state-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.state-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.state-item {
+    background: #4facfe;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+
     </style>
 </head>
 <body>
-<div class="container"></div>
+<div class="container">
+
 <h1>USA Map rahhhh✨🦅</h1>
-<p class="subtitle"></p>
+<p class="subtitle">
 Klicke auf einen State, um ihn auszuwählen. Super zum Kennzeichen collecten!
-<p>
+</p>
+</div>
 
 <!-- USA Map Widget - Created with USA Map Widget Generator -->
 <div class="usa-map-widget" style="width: 100%; max-width: 1200px; margin: 0 auto; font-size: 14px !important;">
@@ -327,6 +353,24 @@ Klicke auf einen State, um ihn auszuwählen. Super zum Kennzeichen collecten!
     <div id="progress-bar"></div>
 </div>
 
+<button id="reset-btn" onclick="resetStates()" style="
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #ff4d4d;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+">
+    Fortschritt zurücksetzen
+</button>
+
+<div id="state-list-container" style="margin-top: 30px;">
+    <h3>Gesammelte States:</h3>
+    <div id="state-list"></div>
+</div>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -334,17 +378,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateCounter() {
     let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
-    
     let count = clickedStates.length;
+
+    // Prozent berechnen
+    let percent = Math.round((count / 50) * 100);
+
+    // Level bestimmen
+    let level = getFreedomLevel(count);
 
     // Counter Text
     document.getElementById('counter').textContent = 
-        "Gefundene States: " + count + " / 50";
+        `Fortschritt: ${percent}% – ${level}`;
 
     // Fortschrittsbalken
-    let percent = (count / 50) * 100;
     document.getElementById('progress-bar').style.width = percent + "%";
 }
+
+ // ─── HIER FÜGE DIE FUNCTION EIN ───
+    function getFreedomLevel(count) {
+        let level = "";
+        if (count <= 10) level = "🍼 Tiny Freedom Rookie";
+        else if (count <= 25) level = "🛣️ Roadtrip Ranger";
+        else if (count <= 40) level = "🧭 All-American Explorer";
+        else if (count <= 49) level = "✨ Patriot Pioneer";
+        else if (count === 50) level = "🦅 Supreme Eagle of Liberty";
+        return level;
+    }
+
     // Beim Laden wiederherstellen
     let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
     clickedStates.forEach(id => {
@@ -353,30 +413,85 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     updateCounter();
+    updateStateList();
+
+    function updateStateList() {
+    let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+    let container = document.getElementById('state-list');
+
+    container.innerHTML = "";
+
+    // State-Namen holen
+    let stateNames = clickedStates.map(id => {
+        let el = document.getElementById(id);
+        if (el) {
+            let title = el.querySelector('title');
+            return title ? title.textContent : id;
+        }
+        return id;
+    });
+
+    // Alphabetisch sortieren
+    stateNames.sort((a, b) => a.localeCompare(b));
+
+    // In 10er-Blöcke aufteilen
+    for (let i = 0; i < stateNames.length; i += 10) {
+        let row = document.createElement('div');
+        row.className = 'state-row';
+
+        let chunk = stateNames.slice(i, i + 10);
+
+        chunk.forEach(stateName => {
+            let item = document.createElement('div');
+            item.className = 'state-item';
+            item.textContent = stateName;
+            row.appendChild(item);
+        });
+
+        container.appendChild(row);
+    }
+}
 
     // Klick-Events
     states.forEach(state => {
-        state.addEventListener('click', function() {
+    state.addEventListener('click', function() {
 
-            let id = this.id;
-            let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+        // 🦅 EAGLE SOUND
+        let eagle = new Audio("https://www.myinstants.com/media/sounds/eagle-sound.mp3");
+        eagle.play();
 
-            if (this.style.fill !== 'red') {
-                this.style.fill = 'red';
-                if (!clickedStates.includes(id)) {
-                    clickedStates.push(id);
-                }
-            } else {
-                this.style.fill = '#294a85';
-                clickedStates = clickedStates.filter(stateId => stateId !== id);
+        let id = this.id;
+        let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+
+        if (this.style.fill !== 'red') {
+            this.style.fill = 'red';
+            if (!clickedStates.includes(id)) {
+                clickedStates.push(id);
             }
+        } else {
+            this.style.fill = '#294a85';
+            clickedStates = clickedStates.filter(stateId => stateId !== id);
+        }
 
-            localStorage.setItem('clickedStates', JSON.stringify(clickedStates));
+        localStorage.setItem('clickedStates', JSON.stringify(clickedStates));
 
-            updateCounter();
-        });
+        updateCounter();
+        updateStateList();
     });
+});
 
+    window.resetStates = function() {
+    if (confirm("Willst du wirklich alles zurücksetzen? 😢")) {
+        localStorage.removeItem('clickedStates');
+
+        document.querySelectorAll('.state').forEach(state => {
+            state.style.fill = '#294a85';
+        });
+
+        updateCounter();
+        updateStateList();
+    }
+}
 });
 </script>
 
