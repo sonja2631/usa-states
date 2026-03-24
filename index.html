@@ -3,21 +3,73 @@
 <head>
     <title>USA Kennzeichen Map</title>
     <style>
-        path {
-            fill: lightgray;
-            stroke: white;
-            cursor: pointer;
-        }
+    body {
+        font-family: -apple-system, system-ui, Arial;
+        background: linear-gradient(135deg, #eef2f7, #dce6f5);
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
 
-        path:hover {
-            fill: orange;
-        }
+    .container {
+        max-width: 1000px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        margin-bottom: 10px;
+        font-size: 2.2rem;
+    }
+
+    .subtitle {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    #counter {
+        margin-top: 25px;
+        font-size: 1.3rem;
+        font-weight: bold;
+        background: #f1f5fb;
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 12px;
+    }
+
+    .usa-map-widget path:hover {
+        transform: scale(1.02);
+    }
+
+    #progress-bar-container {
+    width: 100%;
+    max-width: 400px;
+    height: 20px;
+    background: #e0e6f0;
+    border-radius: 10px;
+    margin: 15px auto;
+    overflow: hidden;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
     </style>
 </head>
 <body>
-
-<<h1>USA Map rahhhh</h1>
-<p>Klicke auf einen State, um ihn auszuwählen. Super zum Kennzeichen collecten! </p>
+<div class="container"></div>
+<h1>USA Map rahhhh✨🦅</h1>
+<p class="subtitle"></p>
+Klicke auf einen State, um ihn auszuwählen. Super zum Kennzeichen collecten!
+<p>
 
 <!-- USA Map Widget - Created with USA Map Widget Generator -->
 <div class="usa-map-widget" style="width: 100%; max-width: 1200px; margin: 0 auto; font-size: 14px !important;">
@@ -267,38 +319,65 @@
   </style>
 </div>
 
+<p id="counter" style="text-align: center; font-size: 20px; margin-top: 20px;">
+    Gefundene States: 0 / 50
+</p>
+
+<div id="progress-bar-container">
+    <div id="progress-bar"></div>
+</div>
+
 <script>
-  // Alle States auswählen
-  document.querySelectorAll('.usa-map-widget .state').forEach(state => {
-    state.addEventListener('click', function() {
-      // Toggle-Farbe beim Klick
-      if (this.style.fill !== 'red') {
-        this.style.fill = 'red';
-      } else {
-        this.style.fill = '#294a85'; // Originalfarbe zurück
-      }
+document.addEventListener("DOMContentLoaded", function () {
 
-      // localStorage speichern
-        let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
-        if (!clickedStates.includes(id)) {
-            clickedStates.push(id);
-        } else {
-            // Wenn zurückgesetzt, entfernen
-            clickedStates = clickedStates.filter(stateId => stateId !== id);
-        }
-        localStorage.setItem('clickedStates', JSON.stringify(clickedStates));
+    const states = document.querySelectorAll('.usa-map-widget .state');
 
-    });
+    function updateCounter() {
+    let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+    
+    let count = clickedStates.length;
 
-    // Gespeicherte States beim Laden wiederherstellen
+    // Counter Text
+    document.getElementById('counter').textContent = 
+        "Gefundene States: " + count + " / 50";
+
+    // Fortschrittsbalken
+    let percent = (count / 50) * 100;
+    document.getElementById('progress-bar').style.width = percent + "%";
+}
+    // Beim Laden wiederherstellen
     let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
     clickedStates.forEach(id => {
-        $('#' + id).attr('fill', 'red');
+        let el = document.getElementById(id);
+        if (el) el.style.fill = "red";
     });
 
-  });
-</script>
-}
+    updateCounter();
+
+    // Klick-Events
+    states.forEach(state => {
+        state.addEventListener('click', function() {
+
+            let id = this.id;
+            let clickedStates = JSON.parse(localStorage.getItem('clickedStates')) || [];
+
+            if (this.style.fill !== 'red') {
+                this.style.fill = 'red';
+                if (!clickedStates.includes(id)) {
+                    clickedStates.push(id);
+                }
+            } else {
+                this.style.fill = '#294a85';
+                clickedStates = clickedStates.filter(stateId => stateId !== id);
+            }
+
+            localStorage.setItem('clickedStates', JSON.stringify(clickedStates));
+
+            updateCounter();
+        });
+    });
+
+});
 </script>
 
 </body>
